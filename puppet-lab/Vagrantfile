@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define "puppetmaster" do |master|
+    master.vm.box = "centos67-novb"
+    master.vm.hostname = "puppetmaster"
+    master.vm.network "private_network", ip: "172.31.0.201"
+    master.vm.synced_folder ".", "/vagrant", disabled: true
+    master.vm.provider :virtualbox do |vbox|
+    # VirtualBox vboxsf does not work in CentOS, so tell Vagrant to igore it.
+      vbox.check_guest_additions = false
+      vbox.functional_vboxsf     = false
+      vbox.name		         = "puppet-master-centos67"
+    end
+  end
+
+  config.vm.define "puppetwiki" do |wiki|
+    wiki.vm.box = "centos67-novb"
+    wiki.vm.hostname = "puppetwiki"
+    wiki.vm.network "private_network", ip: "172.31.0.202"
+    wiki.vm.synced_folder ".", "/vagrant", disabled: true
+    wiki.vm.provider :virtualbox do |vbox|
+    # VirtualBox vboxsf does not work in CentOS, so tell Vagrant to igore it.
+      vbox.check_guest_additions = false
+      vbox.functional_vboxsf     = false
+      vbox.name		         = "puppet-wiki-centos67"
+    end
+  end
+
+  config.vm.define "wikitest" do |wikitest|
+    wikitest.vm.box = "ubt1404"
+    wikitest.vm.hostname = "wikitest"
+    wikitest.vm.network "private_network", ip: "172.31.0.203"
+    wikitest.vm.provider :virtualbox do |vbox|
+      vbox.customize ["modifyvm", :id, "--memory", 2048]
+      vbox.name		        = "puppet-wikitest-ubt1404"
+    end
+  end
+
+end
+
+

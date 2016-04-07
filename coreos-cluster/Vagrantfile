@@ -7,7 +7,7 @@ Vagrant.configure(2) do |config|
     config.vm.define vm_name = "coreos-%02d" % [i] do |node|
       node.vm.box = "coreos-alpha"
       node.vm.hostname = "coreos-%s" % [i]
-      node.vm.network "private_network", ip: "172.31.0.20%s" % [i] 
+      node.vm.network "private_network", ip: "172.31.0.10%s" % [i] 
 
       node.vm.provider :virtualbox do |vbox|
         # On VirtualBox, we don't have guest additions or a functional vboxsf
