@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  (1..3).each do |i|
+    config.vm.define vm_name = "coreos-%02d" % [i] do |node|
+      node.vm.box = "coreos-alpha"
+      node.vm.hostname = "coreos-%s" % [i]
+      node.vm.network "private_network", ip: "172.31.0.20%s" % [i] 
+
+      node.vm.provider :virtualbox do |vbox|
+        # On VirtualBox, we don't have guest additions or a functional vboxsf
+        # in coreos, so tell Vagrant to igore it.
+        vbox.check_guest_additions   = false
+        vbox.functional_vboxsf       = false
+        vbox.name                    = "cluster-coreos-%s" % [i]
+      end
+
+      node.vm.synced_folder ".", "/vagrant", disabled: true
+    end
+
+  end
+end
+
+
