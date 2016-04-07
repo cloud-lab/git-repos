@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "centos67-novb"
+
+  config.vm.define "puppetmaster" do |puppetmaster|
+    puppetmaster.vm.hostname = "puppetmaster"
+    puppetmaster.vm.network "private_network", ip: "172.31.0.201"
+  end
+
+  config.vm.provider :virtualbox do |v|
+    # On VirtualBox, we don't have guest additions or a functional vboxsf
+    # in CentOS, so tell Vagrant to igore it.
+    v.check_guest_additions = false
+    v.functional_vboxsf     = false
+    v.name		    = "puppet-master-centos67"
+  end
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+end
+
+

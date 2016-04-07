@@ -1,0 +1,8 @@
+{
+    "iso_name": "coreos_production_iso_image-alpha.iso",
+    "iso_checksum": "2207f09699ee37e79c32aae972432059",
+    "iso_checksum_type": "md5",
+    "coreos_channel": "alpha",
+    "vm_name": "CoreOS-packer",
+    "file_output": "coreos-min.box"
+}

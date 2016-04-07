@@ -1,0 +1,72 @@
+{
+   "variables": {
+      "iso_path": "file:///C:/CB_Lab/_iso-images",
+      "output_path": "packer_cache",
+      "yaml": "install.yml"
+  },
+
+
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Linux26_64",
+      "guest_additions_mode": "disable",
+      "http_directory": "http",
+      "iso_url": "{{ user `iso_path` }}/{{ user `iso_name` }}",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "ssh_pty" : "true",
+      "ssh_username": "core",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "1000s",
+      "shutdown_command": "sudo -S shutdown -P now",
+      "vm_name": "{{ user `vm_name` }}",
+      "disk_size": 10240,
+      "vboxmanage": [
+           ["modifyvm", "{{.Name}}", "--memory", "1024"],
+           ["modifyvm", "{{.Name}}", "--cpus", "1" ],
+           ["modifyvm", "{{.Name}}", "--usb", "off"],
+           ["modifyvm", "{{.Name}}", "--audio", "none"]
+      ],
+      "boot_wait": "20s",
+      "boot_command":
+      [
+        "sudo -i<enter>",
+        "systemctl stop sshd.socket<enter>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `yaml`}} <enter>",
+        "coreos-install -d /dev/sda -C {{user `coreos_channel`}} -c {{user `yaml`}} <enter>",
+        "sleep 30s<enter>",
+        "reboot<enter>"
+      ]
+    }
+  ],
+
+
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "oem/",
+      "destination": "/home/core"
+    },
+    {
+      "type": "shell",
+      "environment_vars" : [],
+      "scripts": [
+        "scripts/oem.sh",
+        "scripts/cleanup.sh"
+      ]
+    }
+  ],
+
+
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "override": {
+        "virtualbox": {
+          "output": "{{ user `output_path` }}/{{ user `file_output` }}"
+        }
+      }
+    }
+  ]
+}

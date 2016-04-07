@@ -1,0 +1,75 @@
+{
+   "variables": {
+     "iso_path": "file:///C:/CB_Lab/_iso-images",
+     "iso_name": "CentOS-7-x86_64-Minimal.iso",
+     "iso_checksum": "783eef50e1fb91c78901d0421d8114a29b998478",
+     "iso_checksum_type": "sha1",
+     "ks_cfg": "kick-start.cfg",
+     "vm_name": "CentOS7.0-packer",
+     "host_name": "centos70",
+     "file_output": "centos70-vbox.box"
+  },
+
+
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "http_directory": "http",
+      "headless": false,
+      "iso_url": "{{ user `iso_path` }}/{{ user `iso_name` }}",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "ssh_pty" : "true",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "1000s",
+      "vm_name": "{{ user `vm_name` }}",
+      "disk_size": 10240,
+      "vboxmanage": [
+           ["modifyvm", "{{.Name}}", "--memory", "1024"],
+           ["modifyvm", "{{.Name}}", "--cpus", "1" ],
+           ["modifyvm", "{{.Name}}", "--usb", "off"],
+           ["modifyvm", "{{.Name}}", "--audio", "none"]
+      ],
+      "boot_wait": "10s",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `ks_cfg` }}<enter><wait>"
+      ],
+      "shutdown_command": "echo 'shutdown -P now' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'"
+    }
+  ],
+
+
+  "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
+            "override": {
+                "virtualbox-iso": {
+                    "scripts": [
+                        "scripts/1st-run.sh",
+                        "scripts/vagrant.sh",
+                        "scripts/virtualbox.sh",
+                        "scripts/cleanup.sh"
+                    ]
+                }
+            }
+        }
+  ],
+
+
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "override": {
+        "virtualbox": {
+          "output": "packer_cache/{{ user `file_output` }}"
+        }
+      }
+    }
+  ]
+}

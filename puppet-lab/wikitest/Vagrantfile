@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubt1404"
+
+  config.vm.define "wikitest" do |wikitest|
+    wikitest.vm.hostname = "wikitest"
+    wikitest.vm.network "private_network", ip: "172.31.0.203"
+  end
+
+  config.vm.provider :virtualbox do |p|
+    # On VirtualBox, we don't have guest additions or a functional vboxsf
+    # in CentOS, so tell Vagrant to igore it.
+    p.name		    = "puppet-wikitest-ubt1404"
+    p.customize ["modifyvm", :id, "--memory", 2048]
+  end
+
+end
