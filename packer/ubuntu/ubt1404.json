@@ -1,10 +1,10 @@
 {
    "variables": {
-     "iso_path": "file:///C:/CB_Lab/_iso-images",
+     "iso_path": "file:///C:/cloud-lab/_iso-images",
      "iso_name": "ubuntu-14.04.3-server-amd64.iso",
      "iso_checksum": "0501c446929f713eb162ae2088d8dc8b6426224a",
      "iso_checksum_type": "sha1",
-     "preseed": "preseed-1404.cfg",
+     "preseed": "preseed.cfg",
      "vm_name": "Ubuntu-14.04LTS-packer",
      "host_name": "ubt1404",
      "file_output": "ubt1404-min.box"

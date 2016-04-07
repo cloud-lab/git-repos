@@ -1,6 +1,6 @@
 {
    "variables": {
-     "iso_path": "file:///C:/CB_Lab/_iso-images",
+     "iso_path": "file:///C:/cloud-lab/_iso-images",
      "iso_name": "CentOS-7-x86_64-Minimal.iso",
      "iso_checksum": "783eef50e1fb91c78901d0421d8114a29b998478",
      "iso_checksum_type": "sha1",
