@@ -1,0 +1,41 @@
+#cloud-config
+
+ssh_authorized_keys:
+  - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAgEAvCn5qh++tyDd5AyaXEW9Mo15VbgtmrwBWgbcz2YSDEhUOvvZVSMM51PFjH+ibnbLDDelrp0mNLGbpwXhuiP34AsVfZJtF6xiJEuNZjfQtOTDIw7ZM7omtsUkD1/nVeZgh/zw8pngHcW/a/WFSojcvXycLiG1JVycMirAGMV24Ax/UdJsqaKpT2L6F7bidrIi7T5LYPdh21lbY/IYw2akMt/5oWKlgSZnK/qtr5Jw1t04Va0xLyWa+qwG23nlKBq5t8gGF356YvZ8pN42XEDU6kJNp4imZN+gq/IGzOQ9qBToYn8pEf9wSEFh/U7Gj6GoaPhkEfKISLysDswftNKzZlCJIDdirBIjGxPXxHhE4AAfBVDiUKkQqE62el1uuN2GO9758wkFP+e3eN0jOkF42HC3959j2QKD334gso8KZ01zwNau0De4ucvkCHo/lmmW//m0H0fawHKATqIMQ25APZq4eNhSSkgRbfdtYmKBt87mpF3qNSms/WV9Rlt+gqpQTx+DEmbXN/0re+4XFHv3oGv1J9B7XkLFhI/SvmhbPsQVnzNemvbsIuQcfjJXFsQuztsdtZV5gXdSn6uj04AlNTlU+vB76t4+Q9Oj2XCtXNDvo7EIPAI5BYx6v15BA2XyDTOP1iB2M4Fb8ChQqTkcjyRjZjXvz3BWkJ7k/5V0j6s= jonowych@gmail.com"
+
+hostname: "@hostn"
+
+coreos:
+  etcd2:
+    # generate token for cluster from https://discovery.etcd.io/new?size=3
+    # specify the initial size of your cluster with ?size=X
+    discovery: @token
+    # multi-region and multi-cloud deployments need to use $ipaddr
+    advertise-client-urls: http://@ipaddr:2379
+    initial-advertise-peer-urls: http://@ipaddr:2380
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    listen-peer-urls: http://@ipaddr:2380,http://@ipaddr:7001
+
+  units:
+    - name: systemd-networkd.service
+      command: stop
+    - name: 00-eth0.network
+      runtime: true
+      content: |
+        [Match]
+        Name=eth0
+        [Network]
+        DNS=@ipgw
+        Address=@ipaddr/24
+        Gateway=@ipgw
+    - name: down-interfaces.service
+      command: start
+      content: |
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/ip link set eth0 down
+        ExecStart=/usr/bin/ip addr flush dev eth0
+    - name: systemd-networkd.service
+      command: restart
