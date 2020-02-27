@@ -1,0 +1,17 @@
+# Provision second interface in Virtual Ubuntu VM
+# Configure first interface as "NAT", and second interface as "Host-only"
+# Start Ubuntu VM in Virtualbox
+# Configure virtual box interfaces in Ubuntu VM
+
+sudo echo .EOF >> /etc/network/interfaces
+
+# The secondary network interface
+auto enp0s8
+iface enp0s8 inet static
+address 192.168.56.16
+netmask 255.255.255.0
+gateway 10.0.2.3
+EOF
+
+# Restart network interfaces
+sudo /etc/init.d/networking restart
