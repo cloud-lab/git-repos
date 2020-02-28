@@ -3,15 +3,24 @@
 # Start Ubuntu VM in Virtualbox
 # Configure virtual box interfaces in Ubuntu VM
 
-sudo echo .EOF >> /etc/network/interfaces
+# Create a second interface with two IP addresses
+# Do not assign gateway in second interface. All internet traffic go through first interface
 
-# The secondary network interface
+sudo cat <<EOF_interface >> /etc/network/interfaces
+
+# Add second interface with primary static IP
 auto enp0s8
 iface enp0s8 inet static
-address 192.168.56.16
-netmask 255.255.255.0
-gateway 10.0.2.3
-EOF
+  address 192.168.56.16
+  netmask 255.255.255.0
+
+# Add secondary static IP to second interface
+auto enp0s8.1
+iface enp0s8.1 inet static
+  address 192.168.56.17
+  netmask 255.255.255.0
+
+EOF_interface
 
 # Restart network interfaces
 sudo /etc/init.d/networking restart
